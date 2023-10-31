@@ -11,43 +11,91 @@
 
 #define DELETED_ITEM (void *)(0xFFFFFFFFFFFFFFFFUL)
 
+typedef struct entry {
+        char *key;
+        void *object;
+        struct entry *next;
+} entry;
+
 struct hashtable {
         int capacity;
-        void **table;
+        entry **elements;
+        hashfunction *hash;
 };
 
-unsigned int hash(char *key) {
-        int length = strnlen(key, MAX_NAME);
-        unsigned int hash_value = 0;
-        for (int i = 0; i < length; i++) {
-                hash_value += key[i];
-                hash_value = (hash_value * key[i]) % TABLE_SIZE;
-        }
-        return hash_value;
+static size_t hashtable_index(hashtable *ht, const char *key) {
+        size_t result = (ht->hash(key, strlen(key)) % ht->capacity);
+        return result;
 }
 
-hashtable *create_hashtable(int capacity) {
+hashtable *hashtable_create(int capacity, hashfunction *hf) {
         hashtable *ht = malloc(sizeof *ht);
-        ht->table = malloc(sizeof(void *) * capacity);
 
-        for (int i = 0; i < capacity; i++) {
-                ht->table[i] = NULL;
-        }
+        ht->capacity = capacity;
+        ht->elements = calloc(sizeof(entry *), capacity);
+        ht->hash = hf;
 
         return ht;
 }
 
 // TODO: deal with conflicts
-void hashtable_insert(hashtable *ht, char *key, void *value) {
-        int index = hash(key);
-        ht->table[index] = value;
+bool hashtable_insert(hashtable *ht, char *key, void *obj) {
+        if (key == NULL || ht == NULL)
+                return false;
+        size_t index = hashtable_index(ht, key);
+
+        if (hashtable_lookup(ht, key) != NULL)
+                return false;
+
+        entry *e = malloc(sizeof *e);
+
+        e->object = obj;
+        e->key = malloc(strlen(key) + 1);
+        strcpy(e->key, key);
+
+        e->next = ht->elements[index];
+        ht->elements[index] = e;
+
+        return true;
+}
+
+void *hashtable_lookup(hashtable *ht, const char *key) {
+        if (key == NULL || ht == NULL)
+                return false;
+        size_t index = hashtable_index(ht, key);
+
+        entry *tmp = ht->elements[index];
+        while (tmp != NULL && strcmp(tmp->key, key) != 0) {
+                tmp = tmp->next;
+        }
+        if (tmp == NULL)
+                return NULL;
+        return tmp->object;
 }
 
 bool hashtable_delete(hashtable *ht, char *key) {
-        if (ht->table[hash(key)] != NULL) {
-                ht->table[hash(key)] = DELETED_ITEM;
-                return true;
+        if (key == NULL || ht == NULL)
+                return false;
+        size_t index = hashtable_index(ht, key);
+
+        entry *tmp = ht->elements[index];
+        entry *prev = NULL;
+
+        while (tmp != NULL && strcmp(tmp->key, key) != 0) {
+                prev = tmp;
+                tmp = tmp->next;
         }
 
-        return false;
+        if (tmp == NULL)
+                return NULL;
+        if (prev == NULL) {
+                ht->elements[index] = tmp->next;
+        } else {
+                prev->next = tmp->next;
+        }
+
+        void *result = tmp->object;
+        free(tmp);
+
+        return result;
 }
