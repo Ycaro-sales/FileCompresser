@@ -11,18 +11,6 @@
 
 #define DELETED_ITEM (void *)(0xFFFFFFFFFFFFFFFFUL)
 
-typedef struct entry {
-        char *key;
-        void *object;
-        struct entry *next;
-} entry;
-
-struct hashtable {
-        int capacity;
-        entry **elements;
-        hashfunction *hash;
-};
-
 static size_t hashtable_index(hashtable *ht, const char *key) {
         size_t result = (ht->hash(key, strlen(key)) % ht->capacity);
         return result;

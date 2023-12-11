@@ -5,8 +5,19 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-typedef struct hashtable hashtable;
 typedef uint64_t(hashfunction)(const char *, size_t);
+
+typedef struct entry {
+        char *key;
+        void *object;
+        struct entry *next;
+} entry;
+
+typedef struct hashtable {
+        int capacity;
+        entry **elements;
+        hashfunction *hash;
+} hashtable;
 
 hashtable *hashtable_create(int capacity, hashfunction *hash);
 

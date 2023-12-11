@@ -5,7 +5,6 @@
 #include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-        bool result;
         char option;
 
         for (int i = 0; i < argc; i++) {
