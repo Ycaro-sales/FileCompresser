@@ -85,8 +85,8 @@ static void insert_node(huff_tree *htree, huff_node *hnode) {
                         return;
                 }
                 else if (curr->next->frequency < hnode->frequency{
-
                 }
+
                 curr = curr->next;
         }
 }
