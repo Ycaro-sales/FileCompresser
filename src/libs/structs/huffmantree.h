@@ -1,20 +1,18 @@
-#include "hashtable.h"
 #include <stdio.h>
 
 #ifndef HUFFTREE_H
 #define HUFFTREE_H
 
-typedef struct huffman_tree huff_tree;
-typedef struct huffman_node huff_node;
+struct huffman_tree;
+struct huffman_node;
 
-huff_tree *create_huffman_tree(FILE *stream);
+struct huffman_tree *create_huffman_tree(FILE *stream);
 
-static char *tree_to_string(huff_node *root);
-static char *get_buffer_from_file(FILE *stream);
+char *tree_to_string(struct huffman_node *root);
 
-static hashtable *create_char_frequency_table(char *buffer);
-static huff_node *merge_nodes(huff_node *left, huff_node *right);
+static struct huffman_node *merge_nodes(struct huffman_node *left,
+                                        struct huffman_node *right);
 
-static void insert_node(huff_tree *htree, huff_node *hnode);
+static void insert_node(struct huffman_node *htree, struct huffman_node *hnode);
 
 #endif
