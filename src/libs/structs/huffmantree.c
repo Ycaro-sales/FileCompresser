@@ -19,69 +19,114 @@ typedef struct huffman_node {
         struct huffman_node *next;
         struct huffman_node *left;
         struct huffman_node *right;
-} HN;
+} Node;
 
 typedef struct huffman_tree {
-        HN *root;
+        Node *root;
         hashtable *compressed_table;
-        char *tree_string;
-} HT;
+} Tree;
 
-HN *create_huffman_node(entry *data) {
-        HN *tmp = malloc(sizeof *tmp);
-        tmp->character = data->key[0];
-        tmp->frequency = *(int *)data->object;
+static int *createCharFrequencyTable(unsigned char *buffer) {
+        int *char_frequency = calloc(256, sizeof(int));
+
+        for (int i = 0; i < strlen((char *)buffer); i++) {
+                char_frequency[buffer[i]]++;
+        }
+
+        return char_frequency;
+}
+
+Node *hufftree_createNode(unsigned char character, int frequency) {
+        Node *tmp = malloc(sizeof *tmp);
+        tmp->character = character;
+        tmp->frequency = frequency;
         tmp->next = NULL;
         tmp->left = NULL;
         tmp->right = NULL;
         return tmp;
 }
 
-HT *create_huffman_tree(FILE *stream) {
-        HT *tmp = malloc(sizeof(HT));
-        unsigned char *buffer = get_buffer_from_file(stream);
-        hashtable *char_frequency = create_char_frequency_table(&buffer);
+// TODO: Create function
+Node *merge_nodes(Node *left, Node *right) {
+        Node *merged;
+        int frequencySum;
 
-        for (int i = 0; i < char_frequency->capacity; i++) {
-                if (char_frequency->elements[i] != NULL) {
-                        create_huffman_node(char_frequency->elements[i]);
-                }
-        }
-        // tmp->tree_string = tree_to_string(tmp->root);
+        frequencySum = left->frequency + right->frequency;
+        merged = hufftree_createNode('*', frequencySum);
 
-        return tmp;
+        merged->left = left;
+        merged->right = right;
+
+        merged->next = NULL;
+
+        return merged;
 }
 
-unsigned long int hash(const char *letra, size_t size) {
-        return letra[0] % size;
-}
+// NOTE: Test succeed
+void hufftree_insert(Tree *tree, Node *node) {
+        Node *curr = tree->root;
 
-static char *tree_to_string(HN *root);
-static char *get_buffer_from_file(FILE *stream);
-
-static HN *merge_nodes(HN *left, HN *right);
-
-// TODO: Test function
-static void insert_sorted(HT *htree, HN *hnode) {
-        HN *curr = htree->root;
-        if (curr == NULL || curr->frequency > hnode->frequency) {
-                hnode->next = curr;
-                htree->root = hnode;
+        if (tree->root == NULL || tree->root->frequency > node->frequency) {
+                node->next = curr;
+                tree->root = node;
                 return;
         }
 
         while (curr->next != NULL) {
-                if (curr->next->frequency < hnode->frequency) {
+                if (node->frequency > curr->next->frequency) {
+                        curr = curr->next;
                         continue;
                 }
-                if (curr->next->frequency >= hnode->frequency) {
-                        hnode->next = curr->next;
-                        curr->next = hnode;
-                        return;
-                } else if (!curr->next) {
-                        curr->next = hnode;
+                if (curr->next->frequency >= node->frequency) {
+                        node->next = curr->next;
+                        curr->next = node;
                         return;
                 }
                 curr = curr->next;
         }
+        curr->next = node;
+}
+
+Tree *hufftree_create(unsigned char *buffer) {
+        Tree *tree = malloc(sizeof(Tree));
+        int *char_frequency = createCharFrequencyTable(buffer);
+
+        for (int i = 0; i < 256; i++) {
+                if (char_frequency[i] > 0) {
+                        Node *tmpNode = hufftree_createNode((unsigned char)i,
+                                                            char_frequency[i]);
+                        hufftree_insert(tree, tmpNode);
+                }
+        }
+
+        Node *curr = tree->root;
+
+        while (curr != NULL) {
+                printf("%c %i", curr->character, curr->frequency);
+                curr = curr->next;
+        }
+
+        while (tree->root->next != NULL) {
+                Node *merged;
+                merged = merge_nodes(tree->root, tree->root->next);
+                tree->root = tree->root->next->next;
+                hufftree_insert(tree, merged);
+        }
+
+        char *stringBuffer = "";
+        hufftree_toString(tree->root, stringBuffer);
+        printf("%s\n", stringBuffer);
+
+        return tree;
+}
+
+// TODO: Create function
+void hufftree_toString(Node *node, char *buffer) {
+        if (node == NULL)
+                return;
+
+        strcat(buffer, &node->character);
+
+        hufftree_toString(node->left, buffer);
+        hufftree_toString(node->left, buffer);
 }

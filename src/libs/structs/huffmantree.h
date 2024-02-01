@@ -6,13 +6,13 @@
 struct huffman_tree;
 struct huffman_node;
 
-struct huffman_tree *create_huffman_tree(FILE *stream);
+typedef struct huffman_node Node;
+typedef struct huffman_tree Tree;
 
-char *tree_to_string(struct huffman_node *root);
+Tree *hufftree_create(unsigned char *buffer);
+Node *hufftree_createNode(unsigned char character, int frequency);
 
-static struct huffman_node *merge_nodes(struct huffman_node *left,
-                                        struct huffman_node *right);
-
-static void insert_node(struct huffman_node *htree, struct huffman_node *hnode);
+void hufftree_insert(Tree *htree, Node *hnode);
+void hufftree_toString(Node *node, char *buffer);
 
 #endif
