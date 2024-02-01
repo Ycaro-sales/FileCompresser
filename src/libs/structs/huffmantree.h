@@ -12,7 +12,8 @@ typedef struct huffman_tree Tree;
 Tree *hufftree_create(unsigned char *buffer);
 Node *hufftree_createNode(unsigned char character, int frequency);
 
+void test_hufftree_toString();
 void hufftree_insert(Tree *htree, Node *hnode);
-void hufftree_toString(Node *node, char *buffer);
+void hufftree_toString(Node *node, char *buffer, int index);
 
 #endif

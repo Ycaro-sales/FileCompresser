@@ -87,6 +87,16 @@ void hufftree_insert(Tree *tree, Node *node) {
         curr->next = node;
 }
 
+void test_hufftree_toString() {
+        Tree *tree = malloc(sizeof(Tree));
+        tree->root = hufftree_createNode('1', 1);
+        tree->root->left = hufftree_createNode('2', 2);
+        tree->root->right = hufftree_createNode('3', 3);
+        char *buffer = "";
+        hufftree_toString(tree->root, buffer);
+        printf("%s", buffer);
+}
+
 Tree *hufftree_create(unsigned char *buffer) {
         Tree *tree = malloc(sizeof(Tree));
         int *char_frequency = createCharFrequencyTable(buffer);
@@ -113,20 +123,19 @@ Tree *hufftree_create(unsigned char *buffer) {
                 hufftree_insert(tree, merged);
         }
 
-        char *stringBuffer = "";
-        hufftree_toString(tree->root, stringBuffer);
+        char stringBuffer[1000] = "";
+        hufftree_toString(tree->root, stringBuffer, 0);
         printf("%s\n", stringBuffer);
 
         return tree;
 }
 
 // TODO: Create function
-void hufftree_toString(Node *node, char *buffer) {
+void hufftree_toString(Node *node, char *buffer, int index) {
         if (node == NULL)
                 return;
+        buffer[index++] = node->character;
 
-        strcat(buffer, &node->character);
-
-        hufftree_toString(node->left, buffer);
-        hufftree_toString(node->left, buffer);
+        hufftree_toString(node->left, buffer, index);
+        hufftree_toString(node->left, buffer, index);
 }
