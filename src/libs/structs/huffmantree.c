@@ -24,9 +24,12 @@ typedef struct huffman_node {
 
 typedef struct huffman_tree {
         Node *root;
-        hashtable *compressed_table;
         char *stringfied;
+        char **paths;
+        int *char_frequency;
 } Tree;
+
+bool isLeaf(Node *node) { return (node->right != NULL && node->left != NULL); }
 
 static int *createCharFrequencyTable(unsigned char *buffer) {
         int *char_frequency = calloc(256, sizeof(int));
@@ -49,7 +52,7 @@ Node *hufftree_createNode(unsigned char character, int frequency) {
 }
 
 // TODO: Create function
-Node *merge_nodes(Node *left, Node *right) {
+static Node *mergeNodes(Node *left, Node *right) {
         Node *merged;
         int frequencySum;
 
@@ -123,11 +126,14 @@ Tree *hufftree_create(unsigned char *buffer) {
 
         while (tree->root->next != NULL) {
                 Node *merged;
-                merged = merge_nodes(tree->root, tree->root->next);
+                merged = mergeNodes(tree->root, tree->root->next);
                 tree->root = tree->root->next->next;
                 hufftree_insert(tree, merged);
         }
+
+        tree->char_frequency = char_frequency;
         tree->stringfied = hufftree_toString(tree);
+        tree->paths = hufftree_getPaths(tree);
 
         return tree;
 }
@@ -145,4 +151,29 @@ char *hufftree_toString(Tree *tree) {
         char *buffer = "";
         buffer = _hufftree_toString(tree->root, buffer);
         return buffer;
+}
+
+static void _hufftree_getPaths(struct huffman_node *node, char *paths[],
+                               char *path) {
+        if (isLeaf(node)) {
+                paths[node->character] = path;
+        } else {
+                char *tmpRight = malloc(sizeof(path) + sizeof(char));
+                char *tmpLeft = malloc(sizeof(path) + sizeof(char));
+
+                strncpy(tmpRight, path, sizeof(path) + sizeof(char));
+                strncpy(tmpLeft, path, sizeof(path) + sizeof(char));
+
+                _hufftree_getPaths(node->left, paths, strcat(tmpLeft, "0"));
+                _hufftree_getPaths(node->right, paths, strcat(tmpRight, "1"));
+        }
+}
+
+char **hufftree_getPaths(struct huffman_tree *tree) {
+        char **paths = calloc(256, sizeof(char *));
+        char *path = "";
+
+        _hufftree_getPaths(tree->root, paths, path);
+
+        return paths;
 }

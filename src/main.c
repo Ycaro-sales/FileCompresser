@@ -17,9 +17,7 @@ int main() {
                 return 0;
         }
 
-        test_hufftree_toString();
-
-        // compress(stream);
+        compress(stream);
 
         fclose(stream);
 
