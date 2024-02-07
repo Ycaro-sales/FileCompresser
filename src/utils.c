@@ -26,6 +26,13 @@ char *remove_extension(char *file_name) {
         return tmp;
 }
 
+char *concat(const char *dest, const char *src) {
+        char *buffer = malloc(strlen(dest) + strlen(src) + 1);
+        strcpy(buffer, dest);
+        strcat(buffer, src);
+        return buffer;
+}
+
 bool regex_match(char *pattern, char *expression) {
         regex_t *regex = malloc(sizeof(regex_t));
         /* compila a ER passada em argv[1]

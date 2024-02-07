@@ -13,7 +13,8 @@ Tree *hufftree_create(unsigned char *buffer);
 Node *hufftree_createNode(unsigned char character, int frequency);
 
 void test_hufftree_toString();
-void hufftree_insert(Tree *htree, Node *hnode);
-void hufftree_toString(Node *node, char *buffer, int index);
+void hufftree_insert(Tree *tree, Node *node);
+char *hufftree_toString(Tree *tree);
+char *concat(const char *dest, const char *src);
 
 #endif

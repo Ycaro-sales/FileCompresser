@@ -18,4 +18,6 @@ bool is_bit_i_set(unsigned char c, int i);
 
 char *remove_extension(char *file_name);
 
+char *concat(const char *dest, const char *src);
+
 #endif // !UTILS_H
