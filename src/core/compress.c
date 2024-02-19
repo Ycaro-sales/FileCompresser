@@ -88,7 +88,7 @@ FILE *writeCompressedFileData(FILE *compressedFile, char *fileData,
 
                         bit_count--;
 
-                        if (bit_count == 0) {
+                        if (bit_count == -1) {
                                 fputc(current_byte, compressedFile);
                                 bit_count = 7;
                         }
