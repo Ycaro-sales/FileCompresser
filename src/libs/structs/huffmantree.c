@@ -14,28 +14,13 @@
 
 #define UCHAR_AMOUNT 256
 
-typedef struct huffman_node {
-        char character;
-        int frequency;
-        struct huffman_node *next;
-        struct huffman_node *left;
-        struct huffman_node *right;
-} Node;
+bool isLeaf(Node *node) { return (node->right == NULL && node->left == NULL); }
 
-typedef struct huffman_tree {
-        Node *root;
-        char *stringfied;
-        char **paths;
-        int *char_frequency;
-} Tree;
-
-bool isLeaf(Node *node) { return (node->right != NULL && node->left != NULL); }
-
-static int *createCharFrequencyTable(unsigned char *buffer) {
+static int *createCharFrequencyTable(const char *buffer) {
         int *char_frequency = calloc(256, sizeof(int));
 
         for (int i = 0; i < strlen((char *)buffer); i++) {
-                char_frequency[buffer[i]]++;
+                char_frequency[(unsigned char)buffer[i]]++;
         }
 
         return char_frequency;
@@ -49,6 +34,15 @@ Node *hufftree_createNode(unsigned char character, int frequency) {
         tmp->left = NULL;
         tmp->right = NULL;
         return tmp;
+}
+
+Node *hufftree_pop(Tree *tree) {
+        if (tree->root == NULL)
+                return NULL;
+        Node *node = tree->root;
+        tree->root = tree->root->next;
+
+        return node;
 }
 
 // TODO: Create function
@@ -92,42 +86,42 @@ void hufftree_insert(Tree *tree, Node *node) {
         curr->next = node;
 }
 
-void test_hufftree_toString() {
-        printf("test tree to string\n");
-        Tree *tree = malloc(sizeof(Tree));
-        tree->root = hufftree_createNode('1', 1);
-        tree->root->left = hufftree_createNode('2', 2);
-        tree->root->right = hufftree_createNode('3', 3);
-        char *buffer = hufftree_toString(tree);
-        for (int i = 0; i < strlen(buffer); i++) {
-                if (buffer[i] == 0)
-                        continue;
-                printf("%c, %i, %x, %b\n", (unsigned char)buffer[i],
-                       (unsigned char)buffer[i], (unsigned char)buffer[i],
-                       (unsigned char)buffer[i]);
-        }
-        printf("%s", buffer);
-}
-
-Tree *hufftree_create(unsigned char *buffer) {
+Tree *hufftree_create(const char *buffer) {
         Tree *tree = malloc(sizeof(Tree));
         int *char_frequency = createCharFrequencyTable(buffer);
-
+        printf("Char Frequency:");
         for (int i = 0; i < 256; i++) {
                 if (char_frequency[i] > 0) {
                         Node *tmpNode = hufftree_createNode((unsigned char)i,
                                                             char_frequency[i]);
-
+                        printf("\t[%c] = [%i]\n", i, char_frequency[i]);
                         hufftree_insert(tree, tmpNode);
                 }
         }
+        printf("\n");
 
         Node *curr = tree->root;
 
+        printf("merging...\n");
         while (tree->root->next != NULL) {
                 Node *merged;
-                merged = mergeNodes(tree->root, tree->root->next);
-                tree->root = tree->root->next->next;
+                Node *left = hufftree_pop(tree);
+                Node *right = hufftree_pop(tree);
+
+                merged = mergeNodes(left, right);
+
+                printf("Merged Node:\n\n");
+                printf("\tChar: %c\n", merged->character);
+                printf("\tChar frequency: %i\n\n", merged->frequency);
+
+                printf("\tLeft:\n");
+                printf("\t\tChar: %c\n", left->character);
+                printf("\t\tChar frequency: %i\n\n", left->frequency);
+
+                printf("\tRight:\n");
+                printf("\t\tChar: %c\n", right->character);
+                printf("\t\tChar frequency: %i\n\n", right->frequency);
+
                 hufftree_insert(tree, merged);
         }
 
@@ -135,11 +129,22 @@ Tree *hufftree_create(unsigned char *buffer) {
         tree->stringfied = hufftree_toString(tree);
         tree->paths = hufftree_getPaths(tree);
 
+        for (int i = 0; i < 256; i++) {
+                if (!strcmp(tree->paths[i], "")) {
+                        printf("Path[%c] = %s\n", i, tree->paths[i]);
+                }
+        }
+
         return tree;
 }
 
 static char *_hufftree_toString(Node *node, char *buffer) {
         if (node != NULL) {
+                if (node->character == '*' || node->character == '\\') {
+                        char escape = '\\';
+                        concat(buffer, &escape);
+                }
+
                 buffer = concat(buffer, &node->character);
                 buffer = _hufftree_toString(node->left, buffer);
                 buffer = _hufftree_toString(node->right, buffer);
@@ -157,12 +162,10 @@ static void _hufftree_getPaths(struct huffman_node *node, char *paths[],
                                char *path) {
         if (isLeaf(node)) {
                 paths[node->character] = path;
+                printf("path[%c] = %s\n", node->character, path);
         } else {
-                char *tmpRight = malloc(sizeof(path) + sizeof(char));
-                char *tmpLeft = malloc(sizeof(path) + sizeof(char));
-
-                strncpy(tmpRight, path, sizeof(path) + sizeof(char));
-                strncpy(tmpLeft, path, sizeof(path) + sizeof(char));
+                char *tmpRight = strdup(path);
+                char *tmpLeft = strdup(path);
 
                 _hufftree_getPaths(node->left, paths, strcat(tmpLeft, "0"));
                 _hufftree_getPaths(node->right, paths, strcat(tmpRight, "1"));
@@ -170,8 +173,13 @@ static void _hufftree_getPaths(struct huffman_node *node, char *paths[],
 }
 
 char **hufftree_getPaths(struct huffman_tree *tree) {
-        char **paths = calloc(256, sizeof(char *));
-        char *path = "";
+        char **paths = malloc(sizeof(char) * 256);
+
+        for (int i = 0; i < 256; i++) {
+                paths[i] = malloc(sizeof(unsigned char) * 8);
+        }
+
+        char path[256] = "";
 
         _hufftree_getPaths(tree->root, paths, path);
 

@@ -2,6 +2,7 @@
 #include "./core/decompress.h"
 #include "./libs/file_functions.h"
 #include "./libs/structs/huffmantree.h"
+#include "./libs/structs/tests/hufftree_tests.c"
 #include "./utils.h"
 #include <stdbool.h>
 #include <stdio.h>
