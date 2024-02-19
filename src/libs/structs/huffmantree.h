@@ -22,6 +22,8 @@ typedef struct huffman_tree {
         int *char_frequency;
 } Tree;
 
+Tree *hufftree_fromString(char *buffer);
+
 Tree *hufftree_create(const char *buffer);
 Node *hufftree_createNode(unsigned char character, int frequency);
 char **hufftree_getPaths(struct huffman_tree *tree);

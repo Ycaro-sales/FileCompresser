@@ -1,5 +1,4 @@
 #include "../libs/file_functions.h"
-#include "../libs/structs/compressionhash.h"
 #include "../libs/structs/huffmantree.h"
 #include "../utils.h"
 #include <stdbool.h>
@@ -23,8 +22,7 @@ FILE *writeCompressedFileData(FILE *compressedFile, char *fileData,
 int getThrashSize(struct huffman_tree *tree);
 
 bool compress(FILE *stream) {
-        // char *buffer = getBufferFromFile(stream);
-        char *buffer = "AAABBCC\n";
+        char *buffer = getStringFromFile(stream);
 
         struct huffman_tree *tree = hufftree_create(buffer);
         Header *header = createHeader(tree);

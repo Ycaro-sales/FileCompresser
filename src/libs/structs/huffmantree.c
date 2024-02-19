@@ -158,6 +158,41 @@ char *hufftree_toString(Tree *tree) {
         return buffer;
 }
 
+Node *_hufftree_fromString(char *str, int *index) {
+        if (str[*index] == '\0' || *index >= strlen(str)) {
+                return NULL;
+        }
+
+        char value = str[*index];
+        (*index)++;
+
+        // If middle node, create left and right subtrees recursively
+        if (value == '*') {
+                Node *root = hufftree_createNode(value, 0);
+                root->left = _hufftree_fromString(str, index);
+                root->right = _hufftree_fromString(str, index);
+                return root;
+        } else {
+                if (value == '\\') {
+                        (*index)++;
+                }
+
+                // If leaf node, create a leaf node
+                return hufftree_createNode(value, 0);
+        }
+}
+
+Tree *hufftree_fromString(char *buffer) {
+        Tree *tree = malloc(sizeof(Tree));
+
+        tree->root = _hufftree_fromString(buffer, 0);
+        tree->paths = NULL;
+        tree->stringfied = NULL;
+        tree->char_frequency = NULL;
+
+        return tree;
+}
+
 static void _hufftree_getPaths(struct huffman_node *node, char *paths[],
                                char *path) {
         if (isLeaf(node)) {
