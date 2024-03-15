@@ -1,8 +1,6 @@
 #include "huffmantree.h"
 #include "../../utils.h"
 #include "../file_functions.h"
-#include "hashtable.h"
-
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
@@ -184,8 +182,9 @@ Node *_hufftree_fromString(char *str, int *index) {
 
 Tree *hufftree_fromString(char *buffer) {
         Tree *tree = malloc(sizeof(Tree));
+        int index = 0;
 
-        tree->root = _hufftree_fromString(buffer, 0);
+        tree->root = _hufftree_fromString(buffer, &index);
         tree->paths = NULL;
         tree->stringfied = NULL;
         tree->char_frequency = NULL;

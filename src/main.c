@@ -19,6 +19,7 @@ int main() {
         }
 
         compress(stream);
+        decompress(stream);
 
         fclose(stream);
 

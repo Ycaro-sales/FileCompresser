@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *getBufferFromFile(FILE *stream) {
+char *getStringFromFile(FILE *stream) {
 
         fseek(stream, 0, SEEK_END);
 

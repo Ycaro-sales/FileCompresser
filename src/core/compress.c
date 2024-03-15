@@ -106,5 +106,5 @@ int getThrashSize(struct huffman_tree *tree) {
                 }
         }
 
-        return thrash_size % 8;
+        return 8 - (thrash_size % 8);
 }

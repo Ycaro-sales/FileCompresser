@@ -20,9 +20,9 @@ void decompress(FILE *stream) {
 
         Header *header = getHeaderFromBuffer(buffer);
 
-        Tree *hufftree = hufftree_fromString(buffer);
+        Tree *hufftree = hufftree_fromString(header->treeString);
 
-        FILE *decompressedFile = fopen("test.txt", "w");
+        FILE *decompressedFile = fopen("descompresstest.txt", "w");
 
         Node *currNode = hufftree->root;
         for (int i = 0; i < strlen(buffer); i++) {
@@ -46,13 +46,6 @@ void decompress(FILE *stream) {
         }
 
         return;
-}
-
-char *concat(const char *dest, const char *src) {
-        char *buffer = malloc(strlen(dest) + strlen(src) + 1);
-        strcpy(buffer, dest);
-        strcat(buffer, src);
-        return buffer;
 }
 
 Header *getHeaderFromBuffer(char *buffer) {
