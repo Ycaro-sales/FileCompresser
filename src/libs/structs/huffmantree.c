@@ -89,7 +89,7 @@ Tree *hufftree_create(charArray *buffer) {
                 if (char_frequency[i] > 0) {
                         Node *tmpNode = hufftree_createNode((unsigned char)i,
                                                             char_frequency[i]);
-                        printf("\t[%c] = [%i]\n", i, char_frequency[i]);
+                        printf("\t[%x] = [%i]\n", i, char_frequency[i]);
                         hufftree_insert(tree, tmpNode);
                 }
         }
@@ -97,25 +97,12 @@ Tree *hufftree_create(charArray *buffer) {
 
         Node *curr = tree->root;
 
-        printf("merging...\n");
         while (tree->root->next != NULL) {
                 Node *merged;
                 Node *left = hufftree_pop(tree);
                 Node *right = hufftree_pop(tree);
 
                 merged = mergeNodes(left, right);
-
-                printf("Merged Node:\n\n");
-                printf("\tChar: %c\n", merged->character);
-                printf("\tChar frequency: %i\n\n", merged->frequency);
-
-                printf("\tLeft:\n");
-                printf("\t\tChar: %c\n", left->character);
-                printf("\t\tChar frequency: %i\n\n", left->frequency);
-
-                printf("\tRight:\n");
-                printf("\t\tChar: %c\n", right->character);
-                printf("\t\tChar frequency: %i\n\n", right->frequency);
 
                 hufftree_insert(tree, merged);
         }
@@ -195,7 +182,6 @@ static void _hufftree_getPaths(struct huffman_node *node, char *paths[],
                                char *path) {
         if (isLeaf(node)) {
                 paths[node->character] = path;
-                printf("path[%c] = %s\n", node->character, path);
         } else {
                 char *tmpRight = strdup(path);
                 char *tmpLeft = strdup(path);
