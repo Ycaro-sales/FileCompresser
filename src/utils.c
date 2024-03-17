@@ -1,5 +1,4 @@
 #include "utils.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,26 +25,18 @@ char *remove_extension(char *file_name) {
         return tmp;
 }
 
-char *concat(const char *dest, const char *src) {
-        char *buffer = malloc(strlen(dest) + strlen(src) + 1);
-        strcpy(buffer, dest);
-        strcat(buffer, src);
-        return buffer;
-}
+charArray *concat(charArray *dest, char src) {
+        charArray *buffer = malloc(dest->size + 1);
+        buffer->size = dest->size + 1;
+        buffer->array = malloc(buffer->size * sizeof(char));
 
-bool regex_match(char *pattern, char *expression) {
-        regex_t *regex = malloc(sizeof(regex_t));
-        /* compila a ER passada em argv[1]
-         * em caso de erro, a função retorna diferente de zero */
-        if (regcomp(regex, pattern, REG_EXTENDED | REG_NOSUB) != 0) {
-                fprintf(stderr, "erro regcomp\n");
-                exit(1);
+        for (int i = 0; i < dest->size; i++) {
+                buffer->array[i] = dest->array[i];
         }
 
-        /* tenta casar a ER compilada (&reg) com a entrada (argv[2])
-         * se a função regexec retornar 0 casou, caso contrário não */
-        if ((regexec(regex, expression, 0, (regmatch_t *)NULL, 0)) == 0)
-                return true;
-        else
-                return false;
+        buffer->array[buffer->size - 1] = src;
+
+        free(dest);
+
+        return buffer;
 }

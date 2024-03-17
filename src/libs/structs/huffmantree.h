@@ -1,3 +1,4 @@
+#include "../file_functions.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -17,21 +18,21 @@ typedef struct huffman_node {
 
 typedef struct huffman_tree {
         Node *root;
-        char *stringfied;
+        charArray *stringfied;
         char **paths;
         int *char_frequency;
 } Tree;
 
-Tree *hufftree_fromString(char *buffer);
+Tree *hufftree_fromString(charArray *buffer);
 
 void test_hufftree_fromString();
 
-Tree *hufftree_create(const char *buffer);
+Tree *hufftree_create(charArray *buffer);
 Node *hufftree_createNode(unsigned char character, int frequency);
 char **hufftree_getPaths(struct huffman_tree *tree);
 
 void hufftree_insert(Tree *tree, Node *node);
-char *hufftree_toString(Tree *tree);
+charArray *hufftree_toString(Tree *tree);
 Node *hufftree_pop(Tree *tree);
 bool isLeaf(Node *node);
 

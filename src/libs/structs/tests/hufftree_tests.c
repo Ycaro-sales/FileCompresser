@@ -1,7 +1,7 @@
+#include "../../file_functions.h"
 #include "../huffmantree.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 void test_hufftree_toString() {
         printf("test tree to string\n");
@@ -9,23 +9,28 @@ void test_hufftree_toString() {
         tree->root = hufftree_createNode('1', 1);
         tree->root->left = hufftree_createNode('2', 2);
         tree->root->right = hufftree_createNode('3', 3);
-        char *buffer = hufftree_toString(tree);
-        for (int i = 0; i < strlen(buffer); i++) {
-                if (buffer[i] == 0)
+        charArray *buffer = hufftree_toString(tree);
+        for (int i = 0; i < buffer->size; i++) {
+                if (buffer->array[i] == 0)
                         continue;
-                printf("%c, %i, %x, %b\n", (unsigned char)buffer[i],
-                       (unsigned char)buffer[i], (unsigned char)buffer[i],
-                       (unsigned char)buffer[i]);
+                printf("%c, %i, %x, %b\n", (unsigned char)buffer->array[i],
+                       (unsigned char)buffer->array[i],
+                       (unsigned char)buffer->array[i],
+                       (unsigned char)buffer->array[i]);
         }
-        printf("%s", buffer);
+        for (int i = 0; i < buffer->size; i++) {
+                printf("%c", buffer->array[i]);
+        }
+        printf("\n");
 }
 
 void test_hufftree_create() {
-        Tree *tree = hufftree_create("AAABBCC\n");
+        char *string = "AAABBCC\n";
+        charArray *charArray = getCharArrayfromString(string);
+
+        Tree *tree = hufftree_create(charArray);
 
         printf("A = 0 \n");
-        printf("returned: A = %s\n\n", tree->paths['A']);
-
         printf("B = 10\n");
         printf("returned: B = %s\n\n", tree->paths['B']);
 
@@ -35,5 +40,11 @@ void test_hufftree_create() {
         printf("C = 111\n");
         printf("returned: C = %s\n\n", tree->paths['C']);
 
-        printf("Tree string: %s\n", tree->stringfied);
+        printf("Tree string: ");
+
+        for (int i = 0; i < tree->stringfied->size; i++) {
+                printf("%c", tree->stringfied->array[i]);
+        }
+
+        printf("\n");
 }

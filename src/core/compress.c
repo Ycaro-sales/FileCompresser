@@ -2,13 +2,12 @@
 #include "../libs/structs/huffmantree.h"
 #include "../utils.h"
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 typedef struct Header {
-        char *treeString;
+        charArray *treeString;
         unsigned short int treeSize;
         unsigned short int thrashSize;
 } Header;
@@ -17,20 +16,20 @@ Header *createHeader(Tree *tree);
 
 FILE *writeHeader(FILE *compressed_file, Header *header);
 
-FILE *writeCompressedFileData(FILE *compressedFile, char *fileData,
+FILE *writeCompressedFileData(FILE *compressedFile, charArray *fileData,
                               struct huffman_tree *tree);
 int getThrashSize(struct huffman_tree *tree);
 
 bool compress(FILE *stream) {
-        char *buffer = getStringFromFile(stream);
+        charArray *charArray = getStringFromFile(stream);
 
-        struct huffman_tree *tree = hufftree_create(buffer);
+        struct huffman_tree *tree = hufftree_create(charArray);
         Header *header = createHeader(tree);
 
         FILE *compressedFile = fopen("test.huff", "wr");
 
         writeHeader(compressedFile, header);
-        writeCompressedFileData(compressedFile, buffer, tree);
+        writeCompressedFileData(compressedFile, charArray, tree);
 
         return true;
 }
@@ -39,7 +38,7 @@ Header *createHeader(Tree *tree) {
         Header *tmp = malloc(sizeof(Header));
 
         tmp->treeString = hufftree_toString(tree);
-        tmp->treeSize = strlen(tmp->treeString);
+        tmp->treeSize = tmp->treeString->size;
         tmp->thrashSize = getThrashSize(tree);
 
         return tmp;
@@ -63,21 +62,21 @@ FILE *writeHeader(FILE *compressed_file, Header *header) {
         fputc(charBuffer, compressed_file);
 
         for (int i = 0; i < header->treeSize; i++) {
-                fputc(header->treeString[i], compressed_file);
+                fputc(header->treeString->array[i], compressed_file);
         }
 
         return compressed_file;
 }
 
-FILE *writeCompressedFileData(FILE *compressedFile, char *fileData,
+FILE *writeCompressedFileData(FILE *compressedFile, charArray *fileData,
                               struct huffman_tree *tree) {
 
         int bit_count = 7;
         unsigned char current_byte = 0;
 
-        for (int i = 0; i < strlen(fileData); i++) {
-                char *path = tree->paths[fileData[i]];
-                printf("file data [%c] = %s\n", fileData[i], path);
+        for (int i = 0; i < fileData->size; i++) {
+                char *path = tree->paths[fileData->array[i]];
+                printf("file data [%c] = %s\n", fileData->array[i], path);
 
                 for (int j = 0; j < strlen(path); j++) {
                         if (path[j] == '1') {
@@ -86,8 +85,10 @@ FILE *writeCompressedFileData(FILE *compressedFile, char *fileData,
 
                         bit_count--;
 
-                        if (bit_count == -1) {
+                        if (bit_count == -1 || (i == fileData->size - 1 &&
+                                                j == strlen(path) - 1)) {
                                 fputc(current_byte, compressedFile);
+                                printf("current byte: %b\n", current_byte);
                                 bit_count = 7;
                         }
                 }

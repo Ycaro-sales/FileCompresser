@@ -1,5 +1,7 @@
+#include "libs/file_functions.h"
 #include <regex.h>
 #include <stdbool.h>
+
 #ifndef UTILS_H
 #define SWAP(x, y)                                                             \
         do {                                                                   \
@@ -18,6 +20,6 @@ bool is_bit_i_set(unsigned char c, int i);
 
 char *remove_extension(char *file_name);
 
-char *concat(const char *dest, const char *src);
+charArray *concat(charArray *dest, char src);
 
 #endif // !UTILS_H
