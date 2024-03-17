@@ -44,7 +44,7 @@ void decompress(FILE *stream) {
 
                         if (header->thrashSize != 0 &&
                             i == charArray->size - 1 &&
-                            currBit > (8 - header->thrashSize)) {
+                            currBit < (header->thrashSize)) {
                                 break;
                         }
 
@@ -60,10 +60,6 @@ void decompress(FILE *stream) {
                         }
                         if (isLeaf(currNode)) {
                                 fputc(currNode->character, decompressedFile);
-                                if (i == charArray->size - 1 &&
-                                    currBit == header->thrashSize - 1) {
-                                        return;
-                                }
                                 currNode = hufftree->root;
                                 printf("%d\n", currBit);
                         }
@@ -77,10 +73,17 @@ Header *getHeaderFromBuffer(charArray *buffer) {
         Header *header = malloc(sizeof(Header));
 
         header->thrashSize = ((unsigned char)buffer->array[0] >> 5);
+        unsigned char firstByte = buffer->array[0];
+        firstByte <<= 3;
+        firstByte >>= 3;
 
-        unsigned short int tmp = (unsigned short int)buffer->array[0] << 8;
+        printf("size: %lu\n", sizeof(buffer->array[0]));
+        printf("tmp: %b\n", (unsigned char)(buffer->array[0] << 3));
+        printf("tmp: %b\n", (unsigned short int)buffer->array[0]);
 
-        header->treeSize = (unsigned short int)buffer->array[1] | tmp;
+        printf("buffer: %b\n", buffer->array[1]);
+        header->treeSize = (unsigned short int)buffer->array[1] |
+                           ((unsigned short int)firstByte) << 8;
 
         charArray *string = malloc(sizeof(charArray));
         string->size = 0;

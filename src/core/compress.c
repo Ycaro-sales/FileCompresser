@@ -53,7 +53,7 @@ FILE *writeHeader(FILE *compressed_file, Header *header) {
         printf("\tthrash size: %d, %b\n", header->thrashSize,
                header->thrashSize);
 
-        charBuffer = (unsigned char)(header->thrashSize << 13) | charBuffer;
+        charBuffer = ((unsigned char)(header->thrashSize) << 5) | charBuffer;
 
         charBuffer = charBuffer | (unsigned char)(header->treeSize >> 8);
         fputc(charBuffer, compressed_file);
