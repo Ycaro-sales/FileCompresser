@@ -163,7 +163,7 @@ charArray *hufftree_toString(Tree *tree) {
 }
 
 Node *_hufftree_fromString(charArray *str, int *index) {
-        if (str->array[*index] == '\0' || *index >= str->size) {
+        if (*index >= str->size) {
                 return NULL;
         }
 
@@ -181,6 +181,9 @@ Node *_hufftree_fromString(charArray *str, int *index) {
                         (*index)++;
                 }
 
+                // value = str->array[*index];
+                // (*index)++;
+                //
                 // If leaf node, create a leaf node
                 return hufftree_createNode(value, 0);
         }

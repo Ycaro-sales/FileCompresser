@@ -26,7 +26,7 @@ bool compress(FILE *stream) {
         struct huffman_tree *tree = hufftree_create(charArray);
         Header *header = createHeader(tree);
 
-        FILE *compressedFile = fopen("testessss.huff", "wr");
+        FILE *compressedFile = fopen("test.huff", "wr");
 
         writeHeader(compressedFile, header);
         writeCompressedFileData(compressedFile, charArray, tree);
@@ -90,6 +90,7 @@ FILE *writeCompressedFileData(FILE *compressedFile, charArray *fileData,
                                 fputc(current_byte, compressedFile);
                                 printf("current byte: %b\n", current_byte);
                                 bit_count = 7;
+                                current_byte = 0;
                         }
                 }
         }

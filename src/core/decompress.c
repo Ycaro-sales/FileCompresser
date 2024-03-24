@@ -38,9 +38,16 @@ void decompress(FILE *stream) {
 
         Node *currNode = hufftree->root;
         printf("Buffer size: %d\n", charArray->size);
+
+        printf("Buffer pointer: %p\n", currNode);
+
         for (int i = (2 + header->treeSize); i < charArray->size; i++) {
                 for (int currBit = 7; currBit >= 0; currBit--) {
-                        printf("%d\n", currBit);
+                        // Se for o último byte e o tamanho do thrash e o bit
+                        // atual for menor que o thrash, para a descompressão
+                        if (currNode->left == NULL && currNode->right == NULL) {
+                                printf("currNode: %c\n", currNode->character);
+                        }
 
                         if (header->thrashSize != 0 &&
                             i == charArray->size - 1 &&
@@ -48,6 +55,8 @@ void decompress(FILE *stream) {
                                 break;
                         }
 
+                        // Se o bit atual for 1, vai para a direita, senão, vai
+                        // para a esquerda
                         if (is_bit_i_set((unsigned char)charArray->array[i],
                                          currBit)) {
                                 printf("right\n");
@@ -58,14 +67,20 @@ void decompress(FILE *stream) {
                                 currNode = currNode->left;
                                 printf("left\n");
                         }
+
+                        // Se for uma folha, escreve o caractere no arquivo e
+                        // volta para a raiz
+
+                        if (currNode->left == NULL && currNode->right == NULL) {
+                                printf("currNode: %c\n", currNode->character);
+                        }
+
                         if (isLeaf(currNode)) {
                                 fputc(currNode->character, decompressedFile);
                                 currNode = hufftree->root;
-                                printf("%d\n", currBit);
                         }
                 }
         }
-
         return;
 }
 
