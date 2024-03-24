@@ -26,7 +26,7 @@ bool compress(FILE *stream) {
         struct huffman_tree *tree = hufftree_create(charArray);
         Header *header = createHeader(tree);
 
-        FILE *compressedFile = fopen("test.huff", "wr");
+        FILE *compressedFile = fopen("testessss.huff", "wr");
 
         writeHeader(compressedFile, header);
         writeCompressedFileData(compressedFile, charArray, tree);

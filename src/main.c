@@ -10,7 +10,7 @@
 #include <string.h>
 
 int main() {
-        // FILE *stream = fopen("./public/file.txt", "r");
+        // FILE *stream = fopen("./1299278.jpg", "r");
         // printf("opening file\n");
         //
         // if (stream == NULL) {
@@ -22,7 +22,7 @@ int main() {
         //
         // fclose(stream);
 
-        FILE *compressedFile = fopen("./test.huff", "r");
+        FILE *compressedFile = fopen("./testessss.huff", "r");
 
         if (compressedFile == NULL) {
                 printf("Couldn't open the file\n");

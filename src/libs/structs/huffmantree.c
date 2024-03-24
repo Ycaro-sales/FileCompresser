@@ -133,25 +133,32 @@ Tree *hufftree_create(charArray *buffer) {
         return tree;
 }
 
-static charArray *_hufftree_toString(Node *node, charArray *buffer) {
+void _hufftree_toString(Node *node, charArray *buffer, int *index) {
         if (node != NULL) {
                 if ((node->character == '*' && isLeaf(node)) ||
                     node->character == '\\') {
                         char escape = '\\';
-                        buffer = concat(buffer, escape);
-                }
 
-                buffer = concat(buffer, node->character);
-                buffer = _hufftree_toString(node->left, buffer);
-                buffer = _hufftree_toString(node->right, buffer);
+                        buffer->array[*index] = escape;
+                        (*index)++;
+                }
+                buffer->array[*index] = node->character;
+                (*index)++;
+
+                _hufftree_toString(node->left, buffer, index);
+                _hufftree_toString(node->right, buffer, index);
         }
 
-        return buffer;
+        return;
 }
 
 charArray *hufftree_toString(Tree *tree) {
         charArray *buffer = malloc(sizeof(charArray));
-        buffer = _hufftree_toString(tree->root, buffer);
+        buffer->array = malloc(sizeof(char) * 2000);
+        int index = 0;
+        _hufftree_toString(tree->root, buffer, &index);
+        buffer->size = index + 1;
+
         return buffer;
 }
 
