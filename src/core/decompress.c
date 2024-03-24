@@ -34,7 +34,7 @@ void decompress(FILE *stream) {
         printf("Thrash: %d\n", header->thrashSize);
         printf("Tree Size: %d\n", header->treeSize);
 
-        FILE *decompressedFile = fopen("descompresstest.txt", "w");
+        FILE *decompressedFile = fopen("descompressimg.jpg", "w");
 
         Node *currNode = hufftree->root;
         printf("Buffer size: %d\n", charArray->size);

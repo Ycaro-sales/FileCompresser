@@ -9,30 +9,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main() {
-        // FILE *stream = fopen("./public/file.txt", "r");
-        //
-        // printf("opening file\n");
-        //
-        // if (stream == NULL) {
-        //         printf("Couldn't open the file\n");
-        //         return 0;
-        // }
-        //
-        // compress(stream);
-        //
-        // fclose(stream);
+void test_decompress();
+void test_compress();
 
+int main() {
+
+        test_compress();
+        test_decompress();
+        return 0;
+}
+
+void test_decompress() {
         FILE *compressedFile = fopen("./test.huff", "r");
 
         if (compressedFile == NULL) {
                 printf("Couldn't open the file\n");
-                return 0;
+                return;
         }
 
         decompress(compressedFile);
 
         fclose(compressedFile);
+}
 
-        return 0;
+void test_compress() {
+        FILE *stream = fopen("./public/file.txt", "r");
+
+        printf("opening file\n");
+
+        if (stream == NULL) {
+                printf("Couldn't open the file\n");
+                return;
+        }
+
+        compress(stream);
+
+        fclose(stream);
 }

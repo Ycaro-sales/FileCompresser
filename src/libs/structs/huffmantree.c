@@ -179,9 +179,9 @@ Node *_hufftree_fromString(charArray *str, int *index) {
         } else {
                 if (value == '\\') {
                         (*index)++;
+                        value = str->array[*index];
                 }
 
-                // value = str->array[*index];
                 // (*index)++;
                 //
                 // If leaf node, create a leaf node
