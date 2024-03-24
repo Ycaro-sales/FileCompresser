@@ -10,28 +10,28 @@
 #include <string.h>
 
 int main() {
-        // FILE *stream = fopen("./public/file.txt", "r");
-        // printf("opening file\n");
-        //
-        // if (stream == NULL) {
-        //         printf("Couldn't open the file\n");
-        //         return 0;
-        // }
-        //
-        // compress(stream);
-        //
-        // fclose(stream);
+        FILE *stream = fopen("./public/img038.jpg", "r");
+        printf("opening file\n");
 
-        FILE *compressedFile = fopen("./test.huff", "r");
-
-        if (compressedFile == NULL) {
+        if (stream == NULL) {
                 printf("Couldn't open the file\n");
                 return 0;
         }
 
-        decompress(compressedFile);
+        compress(stream);
 
-        fclose(compressedFile);
+        fclose(stream);
+
+        // FILE *compressedFile = fopen("./test.huff", "r");
+        //
+        // if (compressedFile == NULL) {
+        // printf("Couldn't open the file\n");
+        // return 0;
+        // }
+
+        // decompress(compressedFile);
+
+        // fclose(compressedFile);
 
         return 0;
 }
