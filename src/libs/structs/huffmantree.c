@@ -170,6 +170,11 @@ Node *_hufftree_fromString(charArray *str, int *index) {
         char value = str->array[*index];
         (*index)++;
 
+        if (value == '\\') {
+                value = str->array[*index];
+                (*index)++;
+        }
+
         // If middle node, create left and right subtrees recursively
         if (value == '*') {
                 Node *root = hufftree_createNode(value, 0);
@@ -177,14 +182,7 @@ Node *_hufftree_fromString(charArray *str, int *index) {
                 root->right = _hufftree_fromString(str, index);
                 return root;
         } else {
-                if (value == '\\') {
-                        (*index)++;
-                        value = str->array[*index];
-                }
 
-                // (*index)++;
-                //
-                // If leaf node, create a leaf node
                 return hufftree_createNode(value, 0);
         }
 }
@@ -192,6 +190,13 @@ Node *_hufftree_fromString(charArray *str, int *index) {
 Tree *hufftree_fromString(charArray *buffer) {
         Tree *tree = malloc(sizeof(Tree));
         int index = 0;
+
+        printf("buffer size: %d\n", buffer->size);
+        for (int i = 0; i < buffer->size; i++) {
+                printf("%c", buffer->array[i]);
+        }
+
+        printf("\n");
 
         tree->root = _hufftree_fromString(buffer, &index);
         tree->paths = NULL;

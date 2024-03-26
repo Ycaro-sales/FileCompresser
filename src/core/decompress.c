@@ -34,7 +34,7 @@ void decompress(FILE *stream) {
         printf("Thrash: %d\n", header->thrashSize);
         printf("Tree Size: %d\n", header->treeSize);
 
-        FILE *decompressedFile = fopen("descompressimg.jpg", "w");
+        FILE *decompressedFile = fopen("descompresstext.txt", "w");
 
         Node *currNode = hufftree->root;
         printf("Buffer size: %d\n", charArray->size);
@@ -45,9 +45,11 @@ void decompress(FILE *stream) {
                 for (int currBit = 7; currBit >= 0; currBit--) {
                         // Se for o último byte e o tamanho do thrash e o bit
                         // atual for menor que o thrash, para a descompressão
-                        if (currNode->left == NULL && currNode->right == NULL) {
-                                printf("currNode: %c\n", currNode->character);
-                        }
+                        // if (currNode->left == NULL && currNode->right ==
+                        // NULL) {
+                        //         printf("currNode: %c\n",
+                        //         currNode->character);
+                        // }
 
                         if (header->thrashSize != 0 &&
                             i == charArray->size - 1 &&
@@ -59,21 +61,21 @@ void decompress(FILE *stream) {
                         // para a esquerda
                         if (is_bit_i_set((unsigned char)charArray->array[i],
                                          currBit)) {
-                                printf("right\n");
                                 currNode = currNode->right;
                         } else if (!is_bit_i_set(
                                        (unsigned char)charArray->array[i],
                                        currBit)) {
                                 currNode = currNode->left;
-                                printf("left\n");
                         }
 
                         // Se for uma folha, escreve o caractere no arquivo e
                         // volta para a raiz
 
-                        if (currNode->left == NULL && currNode->right == NULL) {
-                                printf("currNode: %c\n", currNode->character);
-                        }
+                        // if (currNode->left == NULL && currNode->right ==
+                        // NULL) {
+                        //         printf("currNode: %c\n",
+                        //         currNode->character);
+                        // }
 
                         if (isLeaf(currNode)) {
                                 fputc(currNode->character, decompressedFile);

@@ -14,7 +14,7 @@ void test_compress();
 
 int main() {
 
-        test_compress();
+        // test_compress();
         test_decompress();
         return 0;
 }
