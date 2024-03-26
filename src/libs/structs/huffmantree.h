@@ -23,6 +23,7 @@ typedef struct huffman_tree {
         int *char_frequency;
 } Tree;
 
+void hufftree_printTree(Node *root);
 Tree *hufftree_fromString(charArray *buffer);
 
 void test_hufftree_fromString();

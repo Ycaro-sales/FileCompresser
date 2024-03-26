@@ -14,26 +14,13 @@ void test_compress();
 
 int main() {
 
-        test_compress();
+        // test_compress();
         test_decompress();
         return 0;
 }
 
-void test_decompress() {
-        FILE *compressedFile = fopen("./test.huff", "r");
-
-        if (compressedFile == NULL) {
-                printf("Couldn't open the file\n");
-                return;
-        }
-
-        decompress(compressedFile);
-
-        fclose(compressedFile);
-}
-
 void test_compress() {
-        FILE *stream = fopen("./public/file.txt", "r");
+        FILE *stream = fopen("./1299278.jpg", "r");
 
         printf("opening file\n");
 
@@ -45,4 +32,17 @@ void test_compress() {
         compress(stream);
 
         fclose(stream);
+}
+
+void test_decompress() {
+        FILE *compressedFile = fopen("./testes.huff", "r");
+
+        if (compressedFile == NULL) {
+                printf("Couldn't open the file\n");
+                return;
+        }
+
+        decompress(compressedFile);
+
+        fclose(compressedFile);
 }

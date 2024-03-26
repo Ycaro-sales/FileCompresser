@@ -11,6 +11,15 @@
 
 bool isLeaf(Node *node) { return (node->right == NULL && node->left == NULL); }
 
+void hufftree_printTree(Node *root) {
+        if (root != NULL) {
+                printf("Char: %d\n", root->character);
+                printf("Frequency: %i\n", root->frequency);
+                hufftree_printTree(root->left);
+                hufftree_printTree(root->right);
+        }
+}
+
 static int *createCharFrequencyTable(charArray *buffer) {
         int *char_frequency = calloc(256, sizeof(int));
 
@@ -97,6 +106,14 @@ Tree *hufftree_create(charArray *buffer) {
 
         Node *curr = tree->root;
 
+        while (curr != NULL) {
+                printf("Char: %c\n", curr->character);
+                printf("Frequency: %i\n", curr->frequency);
+                curr = curr->next;
+        }
+
+        curr = tree->root;
+
         printf("merging...\n");
         while (tree->root->next != NULL) {
                 Node *merged;
@@ -157,7 +174,7 @@ charArray *hufftree_toString(Tree *tree) {
         buffer->array = malloc(sizeof(char) * 2000);
         int index = 0;
         _hufftree_toString(tree->root, buffer, &index);
-        buffer->size = index + 1;
+        buffer->size = index;
 
         return buffer;
 }
@@ -170,6 +187,14 @@ Node *_hufftree_fromString(charArray *str, int *index) {
         char value = str->array[*index];
         (*index)++;
 
+        if (value == '\\') {
+                value = str->array[*index];
+                (*index)++;
+                if (value == '*') {
+                        return hufftree_createNode(value, 0);
+                }
+        }
+
         // If middle node, create left and right subtrees recursively
         if (value == '*') {
                 Node *root = hufftree_createNode(value, 0);
@@ -177,11 +202,6 @@ Node *_hufftree_fromString(charArray *str, int *index) {
                 root->right = _hufftree_fromString(str, index);
                 return root;
         } else {
-                if (value == '\\') {
-                        (*index)++;
-                        value = str->array[*index];
-                }
-
                 // (*index)++;
                 //
                 // If leaf node, create a leaf node
@@ -192,6 +212,13 @@ Node *_hufftree_fromString(charArray *str, int *index) {
 Tree *hufftree_fromString(charArray *buffer) {
         Tree *tree = malloc(sizeof(Tree));
         int index = 0;
+
+        printf("buffer size: %d\n", buffer->size);
+        printf("buffer: ");
+        for (int i = 0; i < buffer->size; i++) {
+                printf("%d ", buffer->array[i]);
+        }
+        printf("\n");
 
         tree->root = _hufftree_fromString(buffer, &index);
         tree->paths = NULL;
