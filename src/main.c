@@ -12,15 +12,42 @@
 void test_decompress();
 void test_compress();
 
-int main() {
+int main(int argc, char *argv[]) {
+        char *filename;
+        int option;
 
-        // test_compress();
-        test_decompress();
+        if (argc < 2) {
+                scanf("%s", filename);
+        } else {
+                filename = argv[1];
+        }
+
+        FILE *stream = fopen(filename, "r");
+
+        if (stream == NULL) {
+                printf("Couldn't open the file\n");
+                return 1;
+        }
+
+        printf("1 - Compress\n2 - Decompress\n");
+
+        switch (option) {
+        case 1:
+                compress(stream);
+                break;
+        case 2:
+                decompress(stream);
+                break;
+        default:
+                printf("Invalid option\n");
+                break;
+        }
+
         return 0;
 }
 
 void test_compress() {
-        FILE *stream = fopen("./1299278.jpg", "r");
+        FILE *stream = fopen("./Untitled.png", "r");
 
         printf("opening file\n");
 
@@ -35,7 +62,7 @@ void test_compress() {
 }
 
 void test_decompress() {
-        FILE *compressedFile = fopen("./testes.huff", "r");
+        FILE *compressedFile = fopen("./testbandeira.huff", "r");
 
         if (compressedFile == NULL) {
                 printf("Couldn't open the file\n");

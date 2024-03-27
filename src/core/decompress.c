@@ -15,6 +15,8 @@ typedef struct Header {
 Header *getHeaderFromBuffer(charArray *buffer);
 
 void decompress(FILE *stream) {
+        char *filename;
+        scanf("%[^\n]", filename);
         charArray *string = getStringFromFile(stream);
 
         Header *header = getHeaderFromBuffer(string);
@@ -31,7 +33,7 @@ void decompress(FILE *stream) {
         printf("Thrash: %d\n", header->thrashSize);
         printf("Tree Size: %d\n", header->treeSize);
 
-        FILE *decompressedFile = fopen("decompressedimg.jpg", "w");
+        FILE *decompressedFile = fopen(filename, "w");
 
         Node *currNode = hufftree->root;
 

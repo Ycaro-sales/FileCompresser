@@ -22,13 +22,20 @@ int getThrashSize(struct huffman_tree *tree);
 
 bool compress(FILE *stream) {
         charArray *charArray = getStringFromFile(stream);
+        char *filename;
+        char *compressedFilename;
+
+        printf("Enter the name of the compressed file: ");
+        scanf("%[^\n]", filename);
+
+        compressedFilename = strcat(filename, ".huff");
 
         struct huffman_tree *tree = hufftree_create(charArray);
         hufftree_printTree(tree->root);
 
         Header *header = createHeader(tree);
 
-        FILE *compressedFile = fopen("testes.huff", "wr");
+        FILE *compressedFile = fopen(compressedFilename, "wr");
 
         writeHeader(compressedFile, header);
         writeCompressedFileData(compressedFile, charArray, tree);
