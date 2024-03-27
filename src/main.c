@@ -16,8 +16,13 @@ int main(int argc, char *argv[]) {
         char *filename;
         int option;
 
+        //  argc = argument counter
+        //  argc = argument vector
+
         if (argc < 2) {
+                printf("Enter the filename: ");
                 scanf("%s", filename);
+                printf("\n");
         } else {
                 filename = argv[1];
         }
@@ -30,6 +35,8 @@ int main(int argc, char *argv[]) {
         }
 
         printf("1 - Compress\n2 - Decompress\n");
+
+        scanf("%d", &option);
 
         switch (option) {
         case 1:

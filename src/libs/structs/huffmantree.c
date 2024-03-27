@@ -54,9 +54,13 @@ static Node *mergeNodes(Node *left, Node *right) {
         Node *merged;
         int frequencySum;
 
+        // soma as frequências dos dois nós
         frequencySum = left->frequency + right->frequency;
+
+        // cria um novo nó com o caractere '*' e a soma das frequências
         merged = hufftree_createNode('*', frequencySum);
 
+        // aponta para os dois nós mesclados
         merged->left = left;
         merged->right = right;
 
@@ -91,54 +95,44 @@ void hufftree_insert(Tree *tree, Node *node) {
 }
 
 Tree *hufftree_create(charArray *buffer) {
+        // aloca espaço para a árvore
         Tree *tree = malloc(sizeof(Tree));
+
+        // cria uma tabela de frequência de caracteres
         int *char_frequency = createCharFrequencyTable(buffer);
-        printf("Char Frequency:");
+
+        // cria um nó para cada caractere que aparece no arquivo
+        // e o insere ordenadamente na árvore
         for (int i = 0; i < 256; i++) {
                 if (char_frequency[i] > 0) {
                         Node *tmpNode = hufftree_createNode((unsigned char)i,
                                                             char_frequency[i]);
-                        printf("\t[%c] = [%i]\n", i, char_frequency[i]);
                         hufftree_insert(tree, tmpNode);
                 }
         }
-        printf("\n");
 
-        Node *curr = tree->root;
-
-        while (curr != NULL) {
-                printf("Char: %c\n", curr->character);
-                printf("Frequency: %i\n", curr->frequency);
-                curr = curr->next;
-        }
-
-        curr = tree->root;
-
-        printf("merging...\n");
+        // cria a árvore de Huffman mesclando os dois primeiros nós
+        // da lista de nós ordenada criando um novo nó com a soma
+        // das frequências dos dois nós mesclados e os inserindo na lista
+        // ordenadamente até que reste apenas um nó na lista
         while (tree->root->next != NULL) {
                 Node *merged;
+
+                // remove os dois primeiros nós da lista e armazena
                 Node *left = hufftree_pop(tree);
                 Node *right = hufftree_pop(tree);
 
+                // mescla os dois nós
                 merged = mergeNodes(left, right);
 
-                printf("Merged Node:\n\n");
-                printf("\tChar: %c\n", merged->character);
-                printf("\tChar frequency: %i\n\n", merged->frequency);
-
-                printf("\tLeft:\n");
-                printf("\t\tChar: %c\n", left->character);
-                printf("\t\tChar frequency: %i\n\n", left->frequency);
-
-                printf("\tRight:\n");
-                printf("\t\tChar: %c\n", right->character);
-                printf("\t\tChar frequency: %i\n\n", right->frequency);
-
+                // insere o nó mesclado na lista ordenadamente
                 hufftree_insert(tree, merged);
         }
 
         tree->char_frequency = char_frequency;
         tree->stringfied = hufftree_toString(tree);
+
+        // cria uma tabela de caminhos para cada caractere
         tree->paths = hufftree_getPaths(tree);
 
         for (int i = 0; i < 256; i++) {
@@ -152,6 +146,7 @@ Tree *hufftree_create(charArray *buffer) {
 
 void _hufftree_toString(Node *node, charArray *buffer, int *index) {
         if (node != NULL) {
+                // se o caractere for '*' ou '\', insere um caractere de escape
                 if ((node->character == '*' && isLeaf(node)) ||
                     node->character == '\\') {
                         char escape = '\\';
@@ -159,9 +154,12 @@ void _hufftree_toString(Node *node, charArray *buffer, int *index) {
                         buffer->array[*index] = escape;
                         (*index)++;
                 }
+
+                // insere o caractere na string
                 buffer->array[*index] = node->character;
                 (*index)++;
 
+                // se for um nó intermediário, chama a função recursivamente
                 _hufftree_toString(node->left, buffer, index);
                 _hufftree_toString(node->right, buffer, index);
         }
@@ -170,9 +168,13 @@ void _hufftree_toString(Node *node, charArray *buffer, int *index) {
 }
 
 charArray *hufftree_toString(Tree *tree) {
+        // aloca espaço para o buffer
         charArray *buffer = malloc(sizeof(charArray));
+
+        // aloca espaço para o array de caracteres
         buffer->array = malloc(sizeof(char) * 2000);
         int index = 0;
+
         _hufftree_toString(tree->root, buffer, &index);
         buffer->size = index;
 
@@ -184,9 +186,11 @@ Node *_hufftree_fromString(charArray *str, int *index) {
                 return NULL;
         }
 
+        // pega o caractere atual da string
         char value = str->array[*index];
         (*index)++;
 
+        // se o caractere for um caractere de escape, pega o próximo caractere
         if (value == '\\') {
                 value = str->array[*index];
                 (*index)++;
@@ -195,31 +199,29 @@ Node *_hufftree_fromString(charArray *str, int *index) {
                 }
         }
 
-        // If middle node, create left and right subtrees recursively
+        // se o caractere for '*' e nao possuir um caractere de escape antes,
+        // cria um nó intermediário
         if (value == '*') {
+                // cria um nó intermediário e chama a função recursivamente
                 Node *root = hufftree_createNode(value, 0);
+
+                // Cria filhos para o nó intermediário
                 root->left = _hufftree_fromString(str, index);
                 root->right = _hufftree_fromString(str, index);
+
                 return root;
         } else {
-                // (*index)++;
-                //
-                // If leaf node, create a leaf node
+                // se o caractere for um caractere normal, retorna um nó folha
                 return hufftree_createNode(value, 0);
         }
 }
 
 Tree *hufftree_fromString(charArray *buffer) {
+        // aloca espaço para a árvore
         Tree *tree = malloc(sizeof(Tree));
         int index = 0;
 
-        printf("buffer size: %d\n", buffer->size);
-        printf("buffer: ");
-        for (int i = 0; i < buffer->size; i++) {
-                printf("%d ", buffer->array[i]);
-        }
-        printf("\n");
-
+        // cria a árvore de Huffman a partir da string
         tree->root = _hufftree_fromString(buffer, &index);
         tree->paths = NULL;
         tree->stringfied = NULL;
@@ -230,10 +232,14 @@ Tree *hufftree_fromString(charArray *buffer) {
 
 static void _hufftree_getPaths(struct huffman_node *node, char *paths[],
                                char *path) {
+        // se for uma folha, insere o caminho na tabela de caminhos
         if (isLeaf(node)) {
                 paths[node->character] = path;
                 printf("path[%c] = %s\n", node->character, path);
         } else {
+                // se não for uma folha, chama a função recursivamente
+                // para a esquerda e para a direita
+                // concatenando 0 para a esquerda e 1 para a direita
                 char *tmpRight = strdup(path);
                 char *tmpLeft = strdup(path);
 

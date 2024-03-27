@@ -5,21 +5,24 @@
 
 charArray *getStringFromFile(FILE *stream) {
         charArray *tmp = malloc(sizeof(charArray));
+
+        // Coloca o ponteiro no final do arquivo
         fseek(stream, 0L, SEEK_END);
 
+        // Pega o tamanho do arquivo
+        // comparando a posição do ponteiro com o início do arquivo
         int file_size = ftell(stream);
         printf("File size: %d\n", file_size);
 
+        // Aloca o espaço necessário para o charArray
         tmp->size = file_size;
         tmp->array = malloc(file_size * sizeof(unsigned char));
 
+        // Volta o ponteiro para o início do arquivo
         rewind(stream);
 
+        // Lê o arquivo e coloca no charArray
         fread(tmp->array, file_size, 1, stream);
-        for (int i = 0; i < file_size; i++) {
-                printf("%d %c\n", i, tmp->array[i]);
-        }
-        printf("\n");
 
         return tmp;
 }

@@ -17,10 +17,14 @@ Header *getHeaderFromBuffer(charArray *buffer);
 void decompress(FILE *stream) {
         char *filename;
         scanf("%[^\n]", filename);
+
+        // Pega o arquivo em formato de charArray
         charArray *string = getStringFromFile(stream);
 
+        // pegar o cabeçalho do arquivo
         Header *header = getHeaderFromBuffer(string);
 
+        // Cria a árvore de Huffman a partir da string da árvore
         Tree *hufftree = hufftree_fromString(header->treeString);
 
         hufftree_printTree(hufftree->root);
@@ -75,23 +79,30 @@ void decompress(FILE *stream) {
 Header *getHeaderFromBuffer(charArray *buffer) {
         Header *header = malloc(sizeof(Header));
 
+        // Pega o tamanho do lixo e da árvore
+        // o lixo sao os 3 primeiros caracteres do primeiro byte
         header->thrashSize = ((unsigned char)buffer->array[0] >> 5);
         unsigned char firstByte = buffer->array[0];
         firstByte <<= 3;
         firstByte >>= 3;
 
+        // o tamanho da arvore sao os 5 bits restantes do primeiro byte
+        // e os 8 bits do segundo byte
         header->treeSize = (unsigned short int)buffer->array[1] |
                            ((unsigned short int)firstByte) << 8;
 
-        charArray *string = malloc(sizeof(charArray));
-        string->size = header->treeSize;
-        string->array = malloc(sizeof(char) * string->size);
+        charArray *treeString = malloc(sizeof(charArray));
 
+        // Aloca o espaço necessário para a string da árvore
+        treeString->size = header->treeSize;
+        treeString->array = malloc(sizeof(char) * treeString->size);
+
+        // Pega a string da árvore
         for (int i = 2; i < header->treeSize + 2; i++) {
-                string->array[i - 2] = buffer->array[i];
+                treeString->array[i - 2] = buffer->array[i];
         }
 
-        header->treeString = string;
+        header->treeString = treeString;
 
         return header;
 }
