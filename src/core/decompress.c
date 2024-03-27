@@ -15,8 +15,8 @@ typedef struct Header {
 Header *getHeaderFromBuffer(charArray *buffer);
 
 void decompress(FILE *stream) {
-        char *filename;
-        scanf("%[^\n]", filename);
+        char *decompressedFilename;
+        scanf("%[^\n]", decompressedFilename);
 
         // Pega o arquivo em formato de charArray
         charArray *string = getStringFromFile(stream);
@@ -29,15 +29,7 @@ void decompress(FILE *stream) {
 
         hufftree_printTree(hufftree->root);
 
-        printf("Tree: ");
-        for (int i = 0; i < header->treeString->size; i++)
-                printf("%d ", header->treeString->array[i]);
-        printf("\n");
-
-        printf("Thrash: %d\n", header->thrashSize);
-        printf("Tree Size: %d\n", header->treeSize);
-
-        FILE *decompressedFile = fopen(filename, "w");
+        FILE *decompressedFile = fopen(decompressedFilename, "w");
 
         Node *currNode = hufftree->root;
 
@@ -62,11 +54,12 @@ void decompress(FILE *stream) {
 
                         // Se for uma folha, escreve o caractere no arquivo e
                         // volta para a raiz
-
                         if (currNode->left == NULL && currNode->right == NULL) {
                                 printf("currNode: %c\n", currNode->character);
                         }
 
+                        // Se for uma folha, escreve o caractere no arquivo e
+                        // volta para a raiz
                         if (isLeaf(currNode)) {
                                 fputc(currNode->character, decompressedFile);
                                 currNode = hufftree->root;
