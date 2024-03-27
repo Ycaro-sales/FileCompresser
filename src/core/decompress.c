@@ -54,12 +54,6 @@ void decompress(FILE *stream) {
 
                         // Se for uma folha, escreve o caractere no arquivo e
                         // volta para a raiz
-                        if (currNode->left == NULL && currNode->right == NULL) {
-                                printf("currNode: %c\n", currNode->character);
-                        }
-
-                        // Se for uma folha, escreve o caractere no arquivo e
-                        // volta para a raiz
                         if (isLeaf(currNode)) {
                                 fputc(currNode->character, decompressedFile);
                                 currNode = hufftree->root;
